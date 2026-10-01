@@ -1,0 +1,12 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "POD Product Clone",
+  "name_for_model": "pod_product_clone",
+  "description_for_human": "Turn proven POD competitor demand into differentiated product variants for Give Mories.",
+  "description_for_model": "Standalone POD product opportunity and production system. Analyze competitor PDPs, print files and ads; extract demand mechanisms; generate differentiated concepts, production layers, variants, thumbnail plans and ad angles. Never inherit Creative DNA unless explicitly requested.",
+  "auth": { "type": "none" },
+  "api": { "type": "openapi", "url": "/api/openapi.json" },
+  "logo_url": "/icon.png",
+  "contact_email": "",
+  "legal_info_url": ""
+}
