@@ -5,11 +5,11 @@ import { z } from "zod";
 import { compilePodCloneJob } from "./src/compiler.js";
 import { POD_CLONE_SYSTEM } from "./src/system.js";
 
-const app = express();
+export const app = express();
 app.use(express.json({ limit: "20mb" }));
 
-const READ_ONLY = { readOnlyHint: true, destructiveHint: false, openWorldHint: false };
-const PENDING_WRITE = { readOnlyHint: false, destructiveHint: false, openWorldHint: false };
+const READ_ONLY = { readOnlyHint: true, destructiveHint: false, openWorldHint: false } as const;
+const PENDING_WRITE = { readOnlyHint: false, destructiveHint: false, openWorldHint: false } as const;
 
 function createServer() {
   const server = new McpServer(
@@ -29,7 +29,9 @@ function createServer() {
       inputSchema: {},
       annotations: READ_ONLY
     },
-    async () => ({ content: [{ type: "text", text: JSON.stringify(POD_CLONE_SYSTEM, null, 2) }] })
+    async () => ({
+      content: [{ type: "text" as const, text: JSON.stringify(POD_CLONE_SYSTEM, null, 2) }]
+    })
   );
 
   server.registerTool(
@@ -53,7 +55,9 @@ function createServer() {
       },
       annotations: READ_ONLY
     },
-    async (input) => ({ content: [{ type: "text", text: JSON.stringify(compilePodCloneJob(input), null, 2) }] })
+    async (input) => ({
+      content: [{ type: "text" as const, text: JSON.stringify(compilePodCloneJob(input), null, 2) }]
+    })
   );
 
   server.registerTool(
@@ -66,7 +70,7 @@ function createServer() {
     },
     async () => ({
       content: [{
-        type: "text",
+        type: "text" as const,
         text: JSON.stringify({ system: POD_CLONE_SYSTEM.id, routes: POD_CLONE_SYSTEM.branches }, null, 2)
       }]
     })
@@ -101,24 +105,46 @@ function createServer() {
       const url = process.env.POD_CLONE_FEEDBACK_UPSTREAM_URL;
       if (!url) {
         return {
-          content: [{ type: "text", text: JSON.stringify({ status: "not_configured", message: "POD_CLONE_FEEDBACK_UPSTREAM_URL is not configured yet.", payload }, null, 2) }],
+          content: [{
+            type: "text" as const,
+            text: JSON.stringify({
+              status: "not_configured",
+              message: "POD_CLONE_FEEDBACK_UPSTREAM_URL is not configured yet.",
+              payload
+            }, null, 2)
+          }],
           isError: true
         };
       }
-      const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+
+      const r = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
       const data = await r.json();
-      return { content: [{ type: "text", text: JSON.stringify(data, null, 2) }], isError: !r.ok };
+
+      return {
+        content: [{ type: "text" as const, text: JSON.stringify(data, null, 2) }],
+        isError: !r.ok
+      };
     }
   );
 
   return server;
 }
 
-app.get("/api/health", (_req, res) => res.json({ ok: true, service: "pod-product-clone", version: POD_CLONE_SYSTEM.version }));
+app.get("/api/health", (_req, res) =>
+  res.json({ ok: true, service: "pod-product-clone", version: POD_CLONE_SYSTEM.version })
+);
 app.get("/api/system", (_req, res) => res.json(POD_CLONE_SYSTEM));
 
 const mcp = createMcpHandler(() => createServer());
 app.all("/api/mcp", toNodeHandler(mcp));
 
-const port = Number(process.env.PORT || 3000);
-app.listen(port, () => console.log(`POD Product Clone listening on :${port}`));
+if (!process.env.VERCEL) {
+  const port = Number(process.env.PORT || 3000);
+  app.listen(port, () => console.log(`POD Product Clone listening on :${port}`));
+}
+
+export default app;
