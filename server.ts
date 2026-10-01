@@ -134,6 +134,40 @@ function createServer() {
   return server;
 }
 
+app.get("/", (_req, res) => {
+  res.type("html").send(`<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>POD Product Clone</title>
+  <style>
+    body{margin:0;background:#0b0b0c;color:#f5f5f5;font:16px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    main{max-width:860px;margin:0 auto;padding:72px 28px}
+    .badge{display:inline-block;padding:6px 10px;border:1px solid #2d2d30;border-radius:999px;color:#b9f6ca;background:#111214}
+    h1{font-size:44px;line-height:1.05;margin:22px 0 14px}
+    p{color:#b8b8bd;max-width:700px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:34px}
+    a{display:block;padding:18px;border:1px solid #2d2d30;border-radius:14px;color:#fff;text-decoration:none;background:#121214}
+    a:hover{border-color:#555}
+    code{color:#d7ffd9}
+  </style>
+</head>
+<body>
+  <main>
+    <span class="badge">● Live</span>
+    <h1>POD Product Clone</h1>
+    <p>Standalone POD opportunity system for competitor analysis, differentiated product directions, production asset decomposition, Give Mories PDP thumbnails, and ad-angle development.</p>
+    <div class="grid">
+      <a href="/api/health"><strong>Health</strong><br><code>/api/health</code></a>
+      <a href="/api/system"><strong>System Spec</strong><br><code>/api/system</code></a>
+      <a href="/api/mcp"><strong>MCP Endpoint</strong><br><code>/api/mcp</code></a>
+    </div>
+  </main>
+</body>
+</html>`);
+});
+
 app.get("/api/health", (_req, res) =>
   res.json({ ok: true, service: "pod-product-clone", version: POD_CLONE_SYSTEM.version })
 );
